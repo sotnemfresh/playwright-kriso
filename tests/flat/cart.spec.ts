@@ -41,7 +41,7 @@ test.describe('Add Books to Shopping Cart', () => {
     await page.getByRole('button', { name: 'Search' }).click();
 
     // parse numeric total from the results text and assert it's > 1
-    const resultsText = await page.locator('.sb-results-total').first().textContent();
+    const resultsText = await page.locator('.sb-results-total').last().textContent();
     const total = Number((resultsText || '').replace(/\D/g, '')) || 0;
     expect(total).toBeGreaterThan(1);
   }); 
