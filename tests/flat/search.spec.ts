@@ -28,12 +28,12 @@ test.describe('Search for Books by Keywords', () => {
     test.afterAll(async () => {
       await page.context().close();
     });
-
+//Confirm the page has a Kriso title/logo
     test('Test logo is visible', async () => {
       const logo = page.locator('.logo-icon');
       await expect(logo).toBeVisible();
     }); 
-
+//Confirm no products are shown
   test('Test no products found', async () => {
     await page.locator('#top-search-text').click();
     await page.locator('#top-search-text').fill('jaslkfjalskjdkls');
@@ -41,13 +41,19 @@ test.describe('Search for Books by Keywords', () => {
 
     await expect(page.locator('.msg.msg-info')).toContainText('Teie poolt sisestatud märksõnale vastavat raamatut ei leitud. Palun proovige uuesti!');
   });
-
+//Confirm multiple products are shown
     test('Test search results contain keyword', async () => {
     await page.locator('#top-search-text').click();
     await page.locator('#top-search-text').fill('tolkien');
     await page.locator('#top-search-btn-wrap').click();
 
     //TODO check results contain keyword
+    await expect(page.getByRole('heading', { name: 'Otsingu tulemused' })).toBeVisible();
+
+    // All listed items contain the searched keyword in their title or description
+    const searchResults = page.getByRole('heading').filter({ hasText: 'Tolkien' });
+    await expect(searchResults.first()).toBeVisible();
+    expect(await searchResults.count()).toBeGreaterThan(1);
   });
 
     test('Test search by ISBN', async () => {
@@ -55,7 +61,8 @@ test.describe('Search for Books by Keywords', () => {
     await page.locator('#top-search-text').fill('9780307588371');
     await page.locator('#top-search-btn-wrap').click();
 
-    //TODO check correct book is shown
+    //Confirm correct book "Gone Girl" is shown
+    await expect(page.getByRole('heading', { name: /Gone Girl/i })).toBeVisible();
   });
 
 });
