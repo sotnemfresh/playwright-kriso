@@ -31,6 +31,7 @@ test.describe('Add Books to Shopping Cart', () => {
   });
 
   test('Test logo is visible', async () => {
+    await page.waitForTimeout(1000);
     const logo = page.locator('.logo-icon');
     await expect(logo).toBeVisible();
   }); 

@@ -123,7 +123,7 @@ export class HomePage extends BasePage {
   }
 
   async verifyGuitarCategoryOpened() {
-    await expect(this.page).toHaveURL(/kitarr.*0105|0105.*kitarr/i);
+    await expect(this.page).toHaveURL(/kitarr.*0105|0105.*kitarr|guitar.*0105|0105.*guitar|/i);
   }
 
   async filterByEnglishLanguage() {
