@@ -22,7 +22,7 @@ test.describe('Add Books to Shopping Cart', () => {
     const context = await browser.newContext();
     page = await context.newPage();
 
-    await page.goto('https://www.kriso.ee/');
+    await page.goto('https://www.kriso.ee/cgi-bin/shop/locale.html?k=est&amp;v=est', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: 'Nõustun' }).click();
   });
 
@@ -39,6 +39,8 @@ test.describe('Add Books to Shopping Cart', () => {
     await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõ' }).click();
     await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõ' }).fill('harry potter');
     await page.getByRole('button', { name: 'Search' }).click();
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(2000);
 
     // parse numeric total from the results text and assert it's > 1
     const resultsText = await page.locator('.sb-results-total').last().textContent();

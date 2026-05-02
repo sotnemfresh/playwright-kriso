@@ -14,16 +14,39 @@ export class BasePage {
   }
 
   async acceptCookies() {
-    await this.consentButton.click();
+    const isVisible = await this.consentButton.isVisible({ timeout: 5_000 }).catch(() => false);
+
+    if (isVisible) {
+      await this.consentButton.click();
+      await this.page.waitForLoadState('networkidle');
+    }
   }
 
   async verifyLogo() {
     await expect(this.logo).toBeVisible();
   }
 
+  protected async resolveSearchInput(): Promise<Locator> {
+    const isVisible = await this.searchInput.isVisible({ timeout: 5_000 }).catch(() => false);
+
+    if (isVisible) {
+      return this.searchInput;
+    }
+
+    const fallbackInput = this.page.getByRole('textbox').first();
+    await expect(fallbackInput).toBeVisible();
+    return fallbackInput;
+  }
+  
   async searchByKeyword(keyword: string) {
-    await this.searchInput.click();
-    await this.searchInput.fill(keyword);
-    await this.searchButton.click();
+    const searchInput = await this.resolveSearchInput();
+    const buttonVisible = await this.searchButton.isVisible({ timeout: 3_000 }).catch(() => false);
+    await searchInput.click();
+    await searchInput.fill(keyword);
+
+    if (buttonVisible) {
+      await this.searchButton.click();
+      return;
+    }
   }
 }

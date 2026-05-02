@@ -21,7 +21,8 @@ test.describe('Search for Books by Keywords', () => {
       const context = await browser.newContext();
       page = await context.newPage();
   
-      await page.goto('https://www.kriso.ee/');
+      await page.goto('https://www.kriso.ee/cgi-bin/shop/locale.html?k=est&amp;v=est', { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(3000);
       await page.getByRole('button', { name: 'Nõustun' }).click();
     });
   

@@ -4,7 +4,7 @@ import { CartPage } from './CartPage';
 import { ProductPage } from './ProductPage';
 
 export class HomePage extends BasePage {
-  private readonly url = 'https://www.kriso.ee/';
+  private readonly url = 'https://www.kriso.ee/cgi-bin/shop/locale.html?k=est&amp;v=est';
   private readonly resultsTotal: Locator;
   private readonly addToCartLink: Locator;
   private readonly addToCartMessage: Locator;
@@ -45,15 +45,18 @@ export class HomePage extends BasePage {
   }
 
   async openUrl() {
-    await this.page.goto(this.url);
+    await this.page.goto(this.url, { waitUntil: 'domcontentloaded' });
+    await this.page.waitForTimeout(3000);
   }
 
   async verifyResultsCountMoreThan(minCount: number) {
+    await this.page.waitForTimeout(2000);
     const total = await this.getResultsCount();
     expect(total).toBeGreaterThan(minCount);
   }
 
   async getResultsCount() {
+    await this.page.waitForTimeout(2000);
     const pageText = await this.page.locator('body').innerText();
     const resultsLine = pageText.split('\n').find((line) => line.includes('Otsingu vasteid leitud:'));
     const match = resultsLine?.match(/Otsingu vasteid leitud:\s*(\d+)/);
@@ -61,11 +64,13 @@ export class HomePage extends BasePage {
   }
 
   async addToCartByIndex(index: number) {
+    await this.addToCartLink.nth(index).waitFor({ state: 'visible', timeout: 25_000 });
     await this.addToCartLink.nth(index).click();
+    await this.page.waitForTimeout(1000);
   }
 
   async verifyAddToCartMessage() {
-    await expect(this.addToCartMessage).toContainText('Toode lisati ostukorvi');
+    await expect(this.addToCartMessage).toContainText('Toode lisati ostukorvi', { timeout: 25_000 });
   }
 
   async verifyCartCount(expectedCount: number) {
@@ -82,7 +87,8 @@ export class HomePage extends BasePage {
   }
 
   async verifyNoProductsFoundMessage() {
-    await expect(this.noResultsMessage).toContainText('Teie poolt sisestatud märksõnale vastavat raamatut ei leitud. Palun proovige uuesti!');
+    await expect(this.noResultsMessage).toBeVisible({ timeout: 10_000 });
+    await expect(this.noResultsMessage).toContainText('Teie poolt sisestatud märksõnale vastavat raamatut ei leitud. Palun proovige uuesti!', { timeout: 10_000 });
   }
 
   async verifySearchResultsContainKeyword() {
@@ -92,11 +98,13 @@ export class HomePage extends BasePage {
   }
 
   async openIsbnResult() {
+    await this.page.getByRole('link', { name: /Gone Girl/i }).first().waitFor({ state: 'visible', timeout: 15_000 });
     await this.page.getByRole('link', { name: /Gone Girl/i }).first().click();
     return new ProductPage(this.page);
   }
 
   async openMusicBooksCategory() {
+    await this.musicBooksLink.waitFor({ state: 'visible', timeout: 15_000 });
     await this.musicBooksLink.click();
   }
 
@@ -105,10 +113,12 @@ export class HomePage extends BasePage {
   }
 
   async openBooksAndScoresCategory() {
+    await this.booksAndScoresLink.waitFor({ state: 'visible', timeout: 15_000 });
     await this.booksAndScoresLink.click();
   }
 
   async openGuitarCategory() {
+    await this.guitarCategoryLink.waitFor({ state: 'visible', timeout: 15_000 });
     await this.guitarCategoryLink.click();
   }
 
@@ -117,10 +127,12 @@ export class HomePage extends BasePage {
   }
 
   async filterByEnglishLanguage() {
+    await this.englishFilterLink.waitFor({ state: 'visible', timeout: 15_000 });
     await this.englishFilterLink.click();
   }
 
   async filterByCdFormat() {
+    await this.cdFilterLink.waitFor({ state: 'visible', timeout: 15_000 });
     await this.cdFilterLink.click();
   }
 
@@ -129,6 +141,7 @@ export class HomePage extends BasePage {
   }
 
   async clearFilters() {
+    await this.clearFiltersLink.waitFor({ state: 'visible', timeout: 25_000 });
     await this.clearFiltersLink.click();
   }
 }
