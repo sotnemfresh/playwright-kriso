@@ -51,10 +51,13 @@ test.describe('Navigate Products via Filters', () => {
 
     await page.getByRole('link', { name: /Noodid ja raamatud/ }).nth(1).click();
     await page.getByRole('link', { name: 'Kitarr' }).nth(1).click();
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(2000);
 
     await expect(page).toHaveURL(/kitarr.*0105|0105.*kitarr|guitar.*0105|0105.*guitar|/i);
 
     const baseCount = await getResultsCount(page);
+
     expect(baseCount).toBeGreaterThan(1);
 
     await page.getByRole('link', { name: /Inglise \(\d+\)/ }).click();
